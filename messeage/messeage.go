@@ -1,8 +1,46 @@
 package messeage
 
 import (
+	"fmt"
 	"os"
+	"time"
 )
+
+type MessageData struct {
+	HostName		string
+	DataTimeText	string
+	Message			string
+}
+
+func NewMessageData(message string) *MessageData {
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = ""
+	}
+
+	now := time.Now()
+	timeText := fmt.Sprintf(
+		"%02d-%02d-%02d %02d:%02d:%02d",
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		now.Hour(),
+		now.Minute(),
+		now.Second(),
+	)
+
+	md := &MessageData{
+		HostName: hostname,
+		DataTimeText: timeText,
+		Message: message,
+	}
+
+	return md
+}
+
+func (m *MessageData) String() string {
+	return fmt.Sprintf("HostName: %s, Time: %s, Message: %s", m.HostName, m.DataTimeText, m.Message)
+}
 
 func GetMessage() string {
 	var messeage string
@@ -12,5 +50,7 @@ func GetMessage() string {
 		messeage = os.Args[1]
 	}
 
-	return messeage
+	md := NewMessageData(messeage)
+
+	return fmt.Sprint(md)
 }
