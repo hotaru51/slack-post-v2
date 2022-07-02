@@ -43,14 +43,12 @@ func (m *MessageData) String() string {
 }
 
 func GetMessage() string {
-	var messeage string
+	md := NewMessageData("")
 
 	// コマンドライン引数で渡された場合はその文字文字列を受け取る
-	if len(os.Args) >= 1 {
-		messeage = os.Args[1]
+	if len(os.Args) >= 2 {
+		md.Message = os.Args[1]
 	}
-
-	md := NewMessageData(messeage)
 
 	return fmt.Sprint(md)
 }
