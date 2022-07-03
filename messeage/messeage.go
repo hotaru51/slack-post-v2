@@ -7,9 +7,9 @@ import (
 )
 
 type MessageData struct {
-	HostName		string
-	DataTimeText	string
-	Message			string
+	HostName     string
+	DataTimeText string
+	Message      string
 }
 
 func NewMessageData(message string) *MessageData {
