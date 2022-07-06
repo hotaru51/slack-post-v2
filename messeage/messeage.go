@@ -3,7 +3,10 @@ package messeage
 import (
 	"fmt"
 	"os"
+	"io/ioutil"
 	"time"
+
+	"golang.org/x/term"
 )
 
 type MessageData struct {
@@ -45,9 +48,18 @@ func (m *MessageData) String() string {
 func GetMessage() string {
 	md := NewMessageData("")
 
-	// コマンドライン引数で渡された場合はその文字文字列を受け取る
-	if len(os.Args) >= 2 {
+	if !term.IsTerminal(0) {
+		data, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		md.Message = string(data)
+	} else if len(os.Args) >= 2 {
 		md.Message = os.Args[1]
+	} else {
+		fmt.Println("no text specified.")
+			os.Exit(1)
 	}
 
 	return fmt.Sprint(md)
