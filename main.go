@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"github.com/hotaru51/slack-post-v2/messeage"
+	"github.com/hotaru51/slack-post-v2/config"
 )
 
 func main() {
 	fmt.Println(messeage.GetMessage())
+	fmt.Println(config.GetAbsPathOfExecutable())
 }
