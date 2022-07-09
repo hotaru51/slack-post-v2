@@ -10,4 +10,5 @@ import (
 func main() {
 	fmt.Println(messeage.GetMessage())
 	fmt.Println(config.GetAbsPathOfExecutable())
+	fmt.Println(config.GetWebhookUrl().WebhookUrl)
 }
