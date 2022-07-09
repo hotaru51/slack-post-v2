@@ -7,12 +7,14 @@ import (
 )
 
 func GetAbsPathOfExecutable() string {
-	relativePath := filepath.Dir(os.Args[0])
-	absPath, err := filepath.Abs(relativePath)
+	// 実行ファイルの絶対パスを取得
+	executablePath, err := os.Executable()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	// 取得したパスのディレクトリを取得
+	executableDir := filepath.Dir(executablePath)
 
-	return absPath
+	return executableDir
 }
