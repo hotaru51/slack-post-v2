@@ -10,7 +10,7 @@ const (
 	ENV_SLACK_WEBHOOK_URL = string("SLACK_WEBHOOK_URL")
 )
 
-type SlackWebhookUlr struct {
+type SlackWebhookUrl struct {
 	WebhookUrl string `json:"slackWebhookUrl"`
 }
 
@@ -27,8 +27,8 @@ func GetAbsPathOfExecutable() string {
 	return executableDir
 }
 
-func GetWebhookUrl() *SlackWebhookUlr {
-	url := new(SlackWebhookUlr)
+func GetWebhookUrl() *SlackWebhookUrl {
+	url := new(SlackWebhookUrl)
 
 	// 環境変数から取得
 	url.WebhookUrl = os.Getenv(ENV_SLACK_WEBHOOK_URL)
