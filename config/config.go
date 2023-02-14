@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"encoding/json"
 )
 
 const (
@@ -50,6 +51,12 @@ func ReadConfigJson() string {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	var webhookUrl SlackWebhookUrl
+	err = json.Unmarshal(byteArr, &webhookUrl)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	return string(byteArr)
+	return webhookUrl.WebhookUrl
 }
