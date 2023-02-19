@@ -46,6 +46,37 @@ func (m *MessageData) String() string {
 	return fmt.Sprintf("HostName: %s, Time: %s, Message: %s", m.HostName, m.DataTimeText, m.Message)
 }
 
+/*
+ * postするrequest bodyのイメージ
+ * {
+ *   "text": "message",
+ *   "blocks": [
+ *     {
+ *       "type": "section",
+ *       "text": {
+ *         "type": "mrkdwn",
+ *         "text": "message"
+ *       }
+ *     }
+ *   ]
+ * }
+ */
+
+type BlockText struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+type Block struct {
+	Type string     `json:"type"`
+	Text *BlockText `json:"text"`
+}
+
+type MessageBody struct {
+	Text   string   `json:"text"`
+	Blocks []*Block `json:"blocks"`
+}
+
 // コマンドライン引数、またはパイプで渡されたメッセージを取得して返す
 func GetMessage() string {
 	md := NewMessageData("")
