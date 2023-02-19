@@ -41,16 +41,18 @@ func GetWebhookUrl() *SlackWebhookUrl {
 
 func ReadConfigJson() string {
 	jsonFilePath := GetAbsPathOfExecutable() + "/" + CONFIG_FILE_NAME
-	f, err := os.Open(jsonFilePath)
+	jsonFile, err := os.Open(jsonFilePath)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	byteArr, err := ioutil.ReadAll(f)
+
+	byteArr, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	var webhookUrl SlackWebhookUrl
 	err = json.Unmarshal(byteArr, &webhookUrl)
 	if err != nil {
