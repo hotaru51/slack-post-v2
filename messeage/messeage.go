@@ -63,18 +63,39 @@ func (m *MessageData) String() string {
  */
 
 type BlockText struct {
-	Type string `json:"type"`
-	Text string `json:"text"`
+	TextType string `json:"type"`
+	Text     string `json:"text"`
+}
+
+func NewBlockText(textType string, text string) *BlockText {
+	return &BlockText{
+		TextType: textType,
+		Text: text,
+	}
 }
 
 type Block struct {
-	Type string     `json:"type"`
-	Text *BlockText `json:"text"`
+	BlockType string     `json:"type"`
+	BlockText *BlockText `json:"text"`
+}
+
+func NewBlock(blockType string, blockText *BlockText) *Block {
+	return &Block{
+		BlockType: blockType,
+		BlockText: blockText,
+	}
 }
 
 type MessageBody struct {
 	Text   string   `json:"text"`
 	Blocks []*Block `json:"blocks"`
+}
+
+func NewMessageBody(text string, blocks []*Block) *MessageBody {
+	return &MessageBody{
+		Text: text,
+		Blocks: blocks,
+	}
 }
 
 // コマンドライン引数、またはパイプで渡されたメッセージを取得して返す
