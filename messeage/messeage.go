@@ -99,7 +99,7 @@ func NewMessageBody(text string, blocks []*Block) *MessageBody {
 }
 
 // コマンドライン引数、またはパイプで渡されたメッセージを取得して返す
-func GetMessage() string {
+func GetMessage() *MessageData {
 	md := NewMessageData("")
 
 	if !term.IsTerminal(0) { // パイプで渡された場合
@@ -116,5 +116,5 @@ func GetMessage() string {
 			os.Exit(1)
 	}
 
-	return fmt.Sprint(md)
+	return md
 }
