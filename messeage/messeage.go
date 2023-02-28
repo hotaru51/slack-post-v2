@@ -1,10 +1,13 @@
 package messeage
 
 import (
+	"bytes"
 	"fmt"
-	"os"
 	"io/ioutil"
+	"os"
+	"text/template"
 	"time"
+	"strings"
 
 	"golang.org/x/term"
 )
@@ -115,6 +118,30 @@ func GetMessage() *MessageData {
 		fmt.Println("no text specified.")
 			os.Exit(1)
 	}
+
+	md.Message = strings.TrimSpace(md.Message)
+
+	// メッセージテンプレート
+	tmplText := "*host:* `{{ .HostName }}`\n"
+	tmplText += "*time:* `{{ .DataTimeText }}`\n"
+	tmplText += "*message:*\n"
+	tmplText += "```\n"
+	tmplText += "{{ .Message }}\n"
+	tmplText += "```"
+
+	// テンプレートにMessageDataの値を反映してテキスト生成
+	tmpl, err := template.New("").Parse(tmplText)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	buf := bytes.NewBuffer(make([]byte, 0))
+	if err = tmpl.Execute(buf, md); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	md.Message = string(buf.Bytes())
 
 	return md
 }

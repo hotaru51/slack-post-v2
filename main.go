@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println(messeage.GetMessage())
+	fmt.Println(messeage.GetMessage().Message)
 	fmt.Println(config.GetAbsPathOfExecutable())
 	fmt.Println(config.GetWebhookUrl().WebhookUrl)
 }
