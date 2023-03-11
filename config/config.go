@@ -34,7 +34,16 @@ func GetWebhookUrl() *SlackWebhookUrl {
 	url := new(SlackWebhookUrl)
 
 	// 環境変数から取得
-	url.WebhookUrl = os.Getenv(ENV_SLACK_WEBHOOK_URL)
+	if fromEnv := os.Getenv(ENV_SLACK_WEBHOOK_URL); len(fromEnv) >= 1 {
+		url.WebhookUrl = fromEnv
+	} else {
+		url.WebhookUrl = ReadConfigJson()
+	}
+
+	if len(url.WebhookUrl) <= 0 {
+		fmt.Println("please specify a valid webhook URL.(config.json or environment variable SLACK_WEBHOOK_URL)")
+		os.Exit(1)
+	}
 
 	return url
 }
