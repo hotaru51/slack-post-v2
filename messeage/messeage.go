@@ -1,9 +1,13 @@
 package messeage
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"os"
 	"io/ioutil"
+	"os"
+	"strings"
+	"text/template"
 	"time"
 
 	"golang.org/x/term"
@@ -46,8 +50,60 @@ func (m *MessageData) String() string {
 	return fmt.Sprintf("HostName: %s, Time: %s, Message: %s", m.HostName, m.DataTimeText, m.Message)
 }
 
+/*
+ * postするrequest bodyのイメージ
+ * {
+ *   "text": "message",
+ *   "blocks": [
+ *     {
+ *       "type": "section",
+ *       "text": {
+ *         "type": "mrkdwn",
+ *         "text": "message"
+ *       }
+ *     }
+ *   ]
+ * }
+ */
+
+type BlockText struct {
+	TextType string `json:"type"`
+	Text     string `json:"text"`
+}
+
+func NewBlockText(textType string, text string) *BlockText {
+	return &BlockText{
+		TextType: textType,
+		Text: text,
+	}
+}
+
+type Block struct {
+	BlockType string     `json:"type"`
+	BlockText *BlockText `json:"text"`
+}
+
+func NewBlock(blockType string, blockText *BlockText) *Block {
+	return &Block{
+		BlockType: blockType,
+		BlockText: blockText,
+	}
+}
+
+type MessageBody struct {
+	Text   string   `json:"text"`
+	Blocks []*Block `json:"blocks"`
+}
+
+func NewMessageBody(text string, blocks []*Block) *MessageBody {
+	return &MessageBody{
+		Text: text,
+		Blocks: blocks,
+	}
+}
+
 // コマンドライン引数、またはパイプで渡されたメッセージを取得して返す
-func GetMessage() string {
+func GetMessage() *MessageData {
 	md := NewMessageData("")
 
 	if !term.IsTerminal(0) { // パイプで渡された場合
@@ -64,5 +120,46 @@ func GetMessage() string {
 			os.Exit(1)
 	}
 
-	return fmt.Sprint(md)
+	md.Message = strings.TrimSpace(md.Message)
+
+	// メッセージテンプレート
+	tmplText := "*host:* `{{ .HostName }}`\n"
+	tmplText += "*time:* `{{ .DataTimeText }}`\n"
+	tmplText += "*message:*\n"
+	tmplText += "```\n"
+	tmplText += "{{ .Message }}\n"
+	tmplText += "```"
+
+	// テンプレートにMessageDataの値を反映してテキスト生成
+	tmpl, err := template.New("").Parse(tmplText)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	buf := bytes.NewBuffer(make([]byte, 0))
+	if err = tmpl.Execute(buf, md); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	md.Message = string(buf.Bytes())
+
+	return md
+}
+
+// POSTするJSONを生成
+func GenerateMessageJson() string {
+	md := GetMessage()
+
+	blockText := NewBlockText("mrkdwn", md.Message)
+	blocks := []*Block{NewBlock("section", blockText)}
+	msgBody := NewMessageBody(md.Message, blocks)
+
+	data, err := json.Marshal(msgBody)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return string(data)
 }
