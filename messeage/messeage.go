@@ -2,12 +2,13 @@ package messeage
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"text/template"
 	"time"
-	"strings"
 
 	"golang.org/x/term"
 )
@@ -144,4 +145,21 @@ func GetMessage() *MessageData {
 	md.Message = string(buf.Bytes())
 
 	return md
+}
+
+// POSTするJSONを生成
+func GenerateMessageJson() string {
+	md := GetMessage()
+
+	blockText := NewBlockText("mrkdwn", md.Message)
+	blocks := []*Block{NewBlock("section", blockText)}
+	msgBody := NewMessageBody(md.Message, blocks)
+
+	data, err := json.Marshal(msgBody)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	return string(data)
 }
